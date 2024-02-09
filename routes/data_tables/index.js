@@ -16,8 +16,8 @@ dataTablesRouter.get("/", async (req, res) => {
 dataTablesRouter.post("/", async (req, res) => {
   const data = req.body;
   const query =
-    "INSERT INTO data_tables (table_id, project_id, data) VALUES ($1, $2) RETURNING *;";
-  const values = [data.project_id, data.project_id, data.data];
+    "INSERT INTO data_tables (id, table_id, project_id, data) VALUES ($1, $2, $3, $4) RETURNING *;";
+  const values = [data.id, data.table_id, data.project_id, data.data];
   try {
     const response_db_get = await pool.query(query, values);
 

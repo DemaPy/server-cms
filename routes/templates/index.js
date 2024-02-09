@@ -16,12 +16,38 @@ templatesRouter.get("/", async (req, res) => {
 templatesRouter.post("/", async (req, res) => {
   const data = req.body;
   const query =
-    "INSERT INTO templates (template_html, template_name) VALUES ($1, $2) RETURNING *;";
-  const values = [data.template_html, data.template_name];
+    "INSERT INTO templates (id, template_html, template_name) VALUES ($1, $2, $3) RETURNING *;";
+  const values = [data.id, data.template_html, data.template_name];
   try {
     const response_db_get = await pool.query(query, values);
 
-    console.log(response_db_get);
+    res.status(200).json(response_db_get.rows);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+templatesRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const query = `DELETE FROM templates WHERE id = '${id}' RETURNING *;`;
+  try {
+    const response_db_get = await pool.query(query);
+
+    res.status(200).json(response_db_get.rows);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+templatesRouter.patch("/", async (req, res) => {
+  const data = req.body;
+  let query;
+  if ("isarchived" in data) {
+    query = `UPDATE templates SET isarchived=${data.isarchived} WHERE id = '${data.id}' RETURNING *;`;
+  }
+  try {
+    const response_db_get = await pool.query(query);
+
     res.status(200).json(response_db_get.rows);
   } catch (error) {
     console.log(error);
